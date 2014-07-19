@@ -1,25 +1,25 @@
 /*
- * Copyright (c) 2012 Adobe Systems Incorporated. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- */
+* Copyright (c) 2012 Adobe Systems Incorporated. All rights reserved.
+*
+* Permission is hereby granted, free of charge, to any person obtaining a
+* copy of this software and associated documentation files (the "Software"),
+* to deal in the Software without restriction, including without limitation
+* the rights to use, copy, modify, merge, publish, distribute, sublicense,
+* and/or sell copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+* DEALINGS IN THE SOFTWARE.
+*
+*/
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
 /*global define */
@@ -27,8 +27,8 @@
 define({
 
     /**
-     * Errors
-     */
+* Errors
+*/
 
     // General file io error strings
     "APP_NAME"                          : "براکتس",
@@ -45,7 +45,7 @@ define({
     "DIRECTORY_NAMES_LEDE"              : "نام های پوشه",
     "FILENAMES_LEDE"                    : "نام های پرونده",
     "FILENAME"                          : "نام پرونده",
-    "DIRECTORY_NAME"                    : "نام پوشه", 
+    "DIRECTORY_NAME"                    : "نام پوشه",
 
     // Project error strings
     "ERROR_LOADING_PROJECT"             : "خطا در بارگذاری پروژه",
@@ -69,7 +69,6 @@ define({
     "INVALID_FILENAME_MESSAGE"          : "نام پرونده نمی تواند شامل مقادیر زیر باشد: {0} و همچنین نمی توانید از عبارات مورد استفاده نرم افزار استفاده نمایید.",
     "ENTRY_WITH_SAME_NAME_EXISTS"       : "پوشه یا پروندهی با نام <span class='dialog-filename'>{0}</span> هم اکنون موجود است.",
     "ERROR_CREATING_FILE_TITLE"         : "خطا در ایجاد {0}",
-    "ERROR_CREATING_FILE"               : "بروز خطا بهنگام ایجاد {0} <span class='dialog-filename'>{1}</span>. {2}",
 
     // Application preferences corrupt error strings
     "ERROR_PREFS_CORRUPT_TITLE" : "خطا در خواندن تنظیمات",
@@ -118,8 +117,8 @@ define({
     "EXT_MODIFIED_MESSAGE"              : "<span class='dialog-filename'>{0}</span> تغییراتی بر روی دیسک انجام شده, ولی تغییرات بر روی براکتس ذخیره نگردیده.<br /><br />کدام نسخه را می خواهید نگه دارید?",
     "EXT_DELETED_MESSAGE"               : "<span class='dialog-filename'>{0}</span> برخی مقادیر از دیسک حذف شده, ولی تغییرات بر روی براکتس اعمال/ذخیره نشده.<br /><br />آیا می خواهید تغییرات را حفظ کنید?",
 
+
     // Generic dialog/button labels
-    "DONE"                              : "انجام شد",
     "OK"                                : "تائید",
     "CANCEL"                            : "لغو",
     "DONT_SAVE"                         : "ذخیره نکن",
@@ -134,17 +133,12 @@ define({
     "FIND_RESULT_COUNT"                 : "{0} نتیجه",
     "FIND_RESULT_COUNT_SINGLE"          : "1 نتیجه",
     "FIND_NO_RESULTS"                   : "بدون نتیجه",
-    "FIND_QUERY_PLACEHOLDER"            : "یافنتن\u2026",
-    "BUTTON_REPLACE_ALL_IN_FILES"        : "جایگزینی\u2026", 
     "REPLACE_PLACEHOLDER"               : "جایگزینی با\u2026",
     "BUTTON_REPLACE_ALL"                : "همه\u2026",
     "BUTTON_REPLACE"                    : "جایگزینی",
     "BUTTON_NEXT"                       : "\u25B6",
     "BUTTON_PREV"                       : "\u25C0",
     "BUTTON_NEXT_HINT"                  : "مورد بعدی",
-    "REPLACE_WITHOUT_UNDO_WARNING_TITLE": "جایگزینی بدون قابلیت بازگشت به قبل", 
-    "REPLACE_WITHOUT_UNDO_WARNING"      : "از آجایی که بیش از {0} پرونده تغییر خواهند یافت, {APP_NAME} پرونده های بازنشده داخل دیک را نیز تغییر خواهد داد.<br />بهمین جهت پس از اعمال تغییرات شما قادر نخواهید بود تغییرات را به حالت قبل برگردانید.", 
-    "BUTTON_REPLACE_WITHOUT_UNDO"       : "جایگزینی بدون قابلیت بازگشت",
     "BUTTON_PREV_HINT"                  : "مورد قبلی",
     "BUTTON_CASESENSITIVE_HINT"         : "مورد تطبیق یافته",
     "BUTTON_REGEXP_HINT"                : "عبارت منظم",
@@ -155,14 +149,15 @@ define({
     "NO_UPDATE_TITLE"                   : "بروز هستید!",
     "NO_UPDATE_MESSAGE"                 : "شما درحال استفاده از آخرین نسخه براکتس هستید.",
 
-    // Find and Replace
-    "FIND_REPLACE_TITLE_LABEL"            : "جایگزینی",
-    "FIND_REPLACE_TITLE_WITH"            : "با",
-    "FIND_TITLE_LABEL"                    : "پیداشده",
-    "FIND_TITLE_SUMMARY"                : " &mdash; {0} {1} {2} در {3}",    
+   // Replace All (in single file)
+    "FIND_REPLACE_TITLE_PART1"          : "جایگزینی \"",
+    "FIND_REPLACE_TITLE_PART2"          : "\" با \"",
+    "FIND_REPLACE_TITLE_PART3"          : "\" &mdash; {2} {0} {1}",
 
     // Find in Files
-    "FIND_NUM_FILES"                    : "{0} {1}", 
+    "FIND_IN_FILES_TITLE_PART1"         : "\"",
+    "FIND_IN_FILES_TITLE_PART2"         : "\" پیدا شد",
+    "FIND_IN_FILES_TITLE_PART3"         : "&mdash; {0} {1} {2} در {3} {4}",
     "FIND_IN_FILES_SCOPED"              : "در <span class='dialog-filename'>{0}</span>",
     "FIND_IN_FILES_NO_SCOPE"            : "در پروژ]",
     "FIND_IN_FILES_ZERO_FILES"          : "فیلترسازی تمامی پرونده های منع شده {0}",
@@ -174,33 +169,29 @@ define({
     "FIND_IN_FILES_PAGING"              : "{0}&mdash;{1}",
     "FIND_IN_FILES_FILE_PATH"           : "پرونده: <span class='dialog-filename'>{0}</span>",
     "FIND_IN_FILES_EXPAND_COLLAPSE"     : "جهت بازکردن/بستن منوها کلید Ctrl/Cmd را گرفته و کلیک کنید.",
-    "REPLACE_IN_FILES_ERRORS_TITLE"     : "خطاهای جایگزینی",
-    "REPLACE_IN_FILES_ERRORS"           : "تغییر در پرونده های زیر اعمال نشد. علت میتواند در تغییر آن ها پس از انجام جستجو یا غیر قابل نوشتن بودن آن ها باشد.", 
     "ERROR_FETCHING_UPDATE_INFO_TITLE"  : "درحال بروزرسانی اطلاعات خطا",
     "ERROR_FETCHING_UPDATE_INFO_MSG"    : "بروز خطا در هنگام دستیابی به آخرین اطلاعات بروزرسانی از سرویس دهنده. اطمینان حاصل کنید که به اینترنت متصل بوده و دوباره تلاش نمایید.",
 
     // File exclusion filters
-     "NEW_FILE_FILTER"                    : "اعمال یک محرومیت جدید(منع پرونده)\u2026",
-     "CLEAR_FILE_FILTER"                : "حذف منعیت از پرونده ها",
-     "NO_FILE_FILTER"                    : "این پرونده ها محروم شده نیستند",
-     "EXCLUDE_FILE_FILTER"                : "منع {0}",
-     "EDIT_FILE_FILTER"                    : "ویرایش\u2026",
-     "FILE_FILTER_DIALOG"                : "ویرایش محرومیت(منعیت پرونده)",
-     "FILE_FILTER_INSTRUCTIONS"            : "محروم سازی پرونده ها و پوشه های منطبق با عبارات زیر یا برخی <a href='{0}' title='{0}'>نویسه های عام</a>. هر عبارت را در یک سطر جدید وارد کنید.",
-     "FILTER_NAME_PLACEHOLDER"            : "عنوانی برای این محروم سازی وارد کنید (اختیاری)",
-     "FILE_FILTER_CLIPPED_SUFFIX"        : "و {0} بیشتر",
-     "FILTER_COUNTING_FILES"            : "شمارش پرونده ها\u2026",
-     "FILTER_FILE_COUNT"                : "همیشه {0} از {1} پرونده {2}",
-     "FILTER_FILE_COUNT_ALL"            : "تائید {0} پرونده {1}",
+    "NO_FILE_FILTER"                    : "این پرونده ها محروم شده نیستند",
+    "EXCLUDE_FILE_FILTER"                : "منع {0}",
+    "EDIT_FILE_FILTER"                    : "ویرایش\u2026",
+    "FILE_FILTER_DIALOG"                : "ویرایش محرومیت(منعیت پرونده)",
+    "FILE_FILTER_INSTRUCTIONS"            : "محروم سازی پرونده ها و پوشه های منطبق با عبارات زیر یا برخی <a href='{0}' title='{0}'>نویسه های عام</a>. هر عبارت را در یک سطر جدید وارد کنید.",
+    "FILE_FILTER_LIST_PREFIX"            : "جز",
+    "FILE_FILTER_CLIPPED_SUFFIX"        : "و {0} بیشتر",
+    "FILTER_COUNTING_FILES"            : "شمارش پرونده ها\u2026",
+    "FILTER_FILE_COUNT"                : "همیشه {0} از {1} پرونده {2}",
+    "FILTER_FILE_COUNT_ALL"            : "تائید {0} پرونده {1}",
 
     // Quick Edit
-     "ERROR_QUICK_EDIT_PROVIDER_NOT_FOUND" : "امکان ویرایش سریع برای مکان فعلی نشانگر موجود نمی باشد",
-     "ERROR_CSSQUICKEDIT_BETWEENCLASSES" : "ویرایشگر سریع CSS: نشان گر را روی یک کلاس قرار دهید",
-     "ERROR_CSSQUICKEDIT_CLASSNOTFOUND" : "ویرایشگر سریع CSS: صفات/خصوصیات این کلاس کامل نیست",
-     "ERROR_CSSQUICKEDIT_IDNOTFOUND" : "ویرایشگر سریع CSS: صفات/خصوصیات این id کامل نیست",
-     "ERROR_CSSQUICKEDIT_UNSUPPORTEDATTR" : "ویرایشگر سریع CSS: نشانگر را بر روی یک تگ، کلاس یا id قرار دهید",
-     "ERROR_TIMINGQUICKEDIT_INVALIDSYNTAX" : "تابع زمانبندی ویرایشگر سریع CSS: خطا در نحو",
-     "ERROR_JSQUICKEDIT_FUNCTIONNOTFOUND" : "ویرایشگر سریع JS: نشانگر را روی نام تابع قرار دهید",
+    "ERROR_QUICK_EDIT_PROVIDER_NOT_FOUND" : "امکان ویرایش سریع برای مکان فعلی نشانگر موجود نمی باشد",
+    "ERROR_CSSQUICKEDIT_BETWEENCLASSES" : "ویرایشگر سریع CSS: نشان گر را روی یک کلاس قرار دهید",
+    "ERROR_CSSQUICKEDIT_CLASSNOTFOUND" : "ویرایشگر سریع CSS: صفات/خصوصیات این کلاس کامل نیست",
+    "ERROR_CSSQUICKEDIT_IDNOTFOUND" : "ویرایشگر سریع CSS: صفات/خصوصیات این id کامل نیست",
+    "ERROR_CSSQUICKEDIT_UNSUPPORTEDATTR" : "ویرایشگر سریع CSS: نشانگر را بر روی یک تگ، کلاس یا id قرار دهید",
+    "ERROR_TIMINGQUICKEDIT_INVALIDSYNTAX" : "تابع زمانبندی ویرایشگر سریع CSS: خطا در نحو",
+    "ERROR_JSQUICKEDIT_FUNCTIONNOTFOUND" : "ویرایشگر سریع JS: نشانگر را روی نام تابع قرار دهید",
 
      // Quick Docs
     "ERROR_QUICK_DOCS_PROVIDER_NOT_FOUND"   : "سند سریع برای مکان فعلی نمایشگر مکان موجود نمی باشد",
@@ -227,7 +218,7 @@ define({
     "STATUSBAR_SELECTION_CH_PLURAL"         : " \u2014 {0} ستون انتخاب شده",
     "STATUSBAR_SELECTION_LINE_SINGULAR"     : " \u2014 {0} خط انتخاب شده",
     "STATUSBAR_SELECTION_LINE_PLURAL"       : " \u2014 {0} خط انتخاب شده",
-    "STATUSBAR_SELECTION_MULTIPLE"          : " \u2014 {0} انتخاب شده ها", 
+    "STATUSBAR_SELECTION_MULTIPLE"          : " \u2014 {0} انتخاب شده ها",
     "STATUSBAR_INDENT_TOOLTIP_SPACES"       : "کلیک کنید تا به این فضاها منتقل شوید",
     "STATUSBAR_INDENT_TOOLTIP_TABS"         : "کلیک کنید تا به این زبانه ها منتقل شوید",
     "STATUSBAR_INDENT_SIZE_TOOLTIP_SPACES"  : "جهت تغییر تعداد فضاهای خالی استفاده شده در هنگام فاصله دهی خطوط از چپ، کلیک کنید",
@@ -314,6 +305,7 @@ define({
     // Search menu commands
     "FIND_MENU"                           : "جستجو",
     "CMD_FIND"                            : "جستجو",
+    "CMD_FIND_FIELD_PLACEHOLDER"          : "جستجو\u2026",
     "CMD_FIND_NEXT"                       : "بعدی",
     "CMD_FIND_PREVIOUS"                   : "قبلی",
     "CMD_FIND_ALL_AND_SELECT"             : "جستجو برای تمامی موارد و انتخاب آن ها",
@@ -323,9 +315,6 @@ define({
     "CMD_FIND_IN_SELECTED"                : "جستجو در پرونده/پوشه انتخاب شده",
     "CMD_FIND_IN_SUBTREE"                 : "جستجو در\u2026",
     "CMD_REPLACE"                         : "جستجو و جایگزینی",
-    "CMD_REPLACE_IN_FILES"                : "جایگزینی در پرونده ها",
-    "CMD_REPLACE_IN_SELECTED"             : "جایگزینی در پرونده ها/پوشه های انتخاب شده",
-    "CMD_REPLACE_IN_SUBTREE"              : "جایگزینی در\u2026", 
 
     // View menu commands
     "VIEW_MENU"                           : "نمایش",
@@ -367,7 +356,7 @@ define({
     // Help menu commands
     "HELP_MENU"                           : "راهنما",
     "CMD_CHECK_FOR_UPDATE"                : "بررسی برای بروزرسانی",
-    "CMD_HOW_TO_USE_BRACKETS"             : "چگونه از {APP_NAME} استفاده کنیم", 
+    "CMD_HOW_TO_USE_BRACKETS"             : "چگونه از {APP_NAME} استفاده کنیم",
     "CMD_SUPPORT"                         : "پشتیبانی {APP_NAME}",
     "CMD_SUGGEST"                         : "پیشنهاد یک امکان جدید",
     "CMD_RELEASE_NOTES"                   : "نکات انتشار",
@@ -388,7 +377,6 @@ define({
     "ABOUT"                                : "پیرامون",
     "CLOSE"                                : "بستن",
     "ABOUT_TEXT_LINE1"                     : "پیش روی {VERSION_MINOR} {BUILD_TYPE} {VERSION}",
-    "ABOUT_TEXT_BUILD_TIMESTAMP"           : "روند پیش رفت: ", 
     "ABOUT_TEXT_LINE3"                     : "<div style='direction:rtl;margin-right:3px;'>یادداشتهای ها، شرایط و ضوابط مربوط به نرم افزار و حقوق شخص ثالث در آدرس<a href='#' class='clickable-link' data-href='http://www.adobe.com/go/thirdparty/'>http://www.adobe.com/go/thirdparty/</a> جهت تلفیق و بعنوان مرجع قرار داده شده.",
     "ABOUT_TEXT_LINE4"                     : "اسناد، نکات و منابع نرم افزار در پیوند <a href='#' class='clickable-link' data-href='https://github.com/adobe/brackets/'>https://github.com/adobe/brackets/</a> در دسترس می باشد. می توانید جهت مشاهده سریع بروزرسانی های قبل از انتشار نرم افزار بهمین لینک مراجعه فرمایید.<br><b>ترجمه توسط محمد یعقوبی<b>",
     "ABOUT_TEXT_LINE5"                     : "ساخته شده با \u2764 و JavaScript و بدست:",
@@ -509,7 +497,7 @@ define({
 
     // extensions/default/DebugCommands
     "DEBUG_MENU"                                : "خطا یابی",
-    "ERRORS"                                    : "خطاها", 
+    "ERRORS"                                    : "خطاها",
     "CMD_SHOW_DEV_TOOLS"                        : "نمایش ابزار های توسعه دهندگان",
     "CMD_REFRESH_WINDOW"                        : "بارگذاری مجدد براکتس",
     "CMD_RELOAD_WITHOUT_USER_EXTS"              : "بارگذاری مجدد براکتس بدون بارگذاری افزونه های کاربر",
@@ -520,7 +508,7 @@ define({
     "CMD_ENABLE_NODE_DEBUGGER"                  : "فعال سازی اشکال زدای گرهی",
     "CMD_LOG_NODE_STATE"                        : "ورود گره به حالت کنسول",
     "CMD_RESTART_NODE"                          : "شروع دوباره گره",
-    "CMD_SHOW_ERRORS_IN_STATUS_BAR"             : "نمایش خطاها در نوار وظیفه", 
+    "CMD_SHOW_ERRORS_IN_STATUS_BAR"             : "نمایش خطاها در نوار وظیفه",
     "LANGUAGE_TITLE"                            : "انتخاب زبان",
     "LANGUAGE_MESSAGE"                          : "زبان:",
     "LANGUAGE_SUBMIT"                           : "بارگذاری مجدد براکتس",
@@ -532,7 +520,7 @@ define({
     "INLINE_TIMING_EDITOR_PROGRESSION"          : "پیشرفت",
     "BEZIER_EDITOR_INFO"                        : "<kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Move selected point<br><kbd class='text'>Shift</kbd> Move by ten units<br><kbd class='text'>Tab</kbd> Switch points",
     "STEPS_EDITOR_INFO"                         : "<kbd>↑</kbd><kbd>↓</kbd> Increase or decrease steps<br><kbd>←</kbd><kbd>→</kbd> 'Start' or 'End'",
-    "INLINE_TIMING_EDITOR_INVALID"              : "مقدار سابق <code>{0}</code> دیگر معتبر نمی باشد, زیرا تابع نمایش به مقدار <code>{1}</code> تغییر یافته. سند در اولین ویرایش بروزرسانی خواهد شد.", 
+    "INLINE_TIMING_EDITOR_INVALID"              : "مقدار سابق <code>{0}</code> دیگر معتبر نمی باشد,زیرا تابع نمایش به مقدار <code>{1}</code> تغییر یافته. سند در اولین ویرایش بروزرسانی خواهد شد.",
 
 
     // extensions/default/InlineColorEditor
@@ -562,3 +550,4 @@ define({
     "DOCS_MORE_LINK"                            : "بیشتر"
 
 });
+/* Last translated for fda91311bc233c9ffe7c0053101e9aec00f7a920 */
