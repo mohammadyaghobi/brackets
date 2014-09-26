@@ -22,13 +22,12 @@
  */
 
 /*jslint vars: true, plusplus: true, devel: true, browser: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, describe, xdescribe, it, xit, expect, beforeEach, afterEach, waitsFor, runs, $, beforeFirst, afterLast */
+/*global define, describe, it, expect, beforeEach, afterEach, waitsFor, runs, beforeFirst, afterLast */
 
 define(function (require, exports, module) {
     "use strict";
     
-    var Async                      = require("utils/Async"),
-        FileSystem                 = require("filesystem/FileSystem"),
+    var FileSystem                 = require("filesystem/FileSystem"),
         FileUtils                  = require("file/FileUtils"),
         CSSUtils                   = require("language/CSSUtils"),
         HTMLUtils                  = require("language/HTMLUtils"),
@@ -76,9 +75,7 @@ define(function (require, exports, module) {
         
         if (fileEntry) {
             spec.addMatchers({toMatchSelector: toMatchSelector});
-            
-            var doneLoading = false;
-            
+
             runs(function () {
                 FileUtils.readAsText(fileEntry)
                     .done(function (text) {
@@ -485,6 +482,15 @@ define(function (require, exports, module) {
                 expect(selector).toEqual("");
             });
             
+            // https://github.com/adobe/brackets/issues/9002
+            it("should not hang when the cursor is after '{' or '}' inside comments", function () {
+                var selector = CSSUtils.findSelectorAtDocumentPos(editor, {line: 53, ch: 3});   // after {
+                expect(selector).toEqual("");
+                
+                selector = CSSUtils.findSelectorAtDocumentPos(editor, {line: 55, ch: 1}); // after }
+                expect(selector).toEqual("");
+            });
+
             it("should find rules adjacent to comments", function () {
                 var selector = CSSUtils.findSelectorAtDocumentPos(editor, {line: 47, ch: 4});
                 expect(selector).toEqual("div");

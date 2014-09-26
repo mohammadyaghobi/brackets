@@ -22,7 +22,7 @@
  */
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, window, $, brackets */
+/*global define, $ */
 
 /**
  * MainViewManager Manages the arrangement of all open panes as well as provides the controller
@@ -83,38 +83,20 @@ define(function (require, exports, module) {
         CommandManager      = require("command/CommandManager"),
         MainViewFactory     = require("view/MainViewFactory"),
         ViewStateManager    = require("view/ViewStateManager"),
-        Menus               = require("command/Menus"),
         Commands            = require("command/Commands"),
+        Dialogs             = require("widgets/Dialogs"),
+        DefaultDialogs      = require("widgets/DefaultDialogs"),
         EditorManager       = require("editor/EditorManager"),
-        FileSystem          = require("filesystem/FileSystem"),
         FileSystemError     = require("filesystem/FileSystemError"),
         DocumentManager     = require("document/DocumentManager"),
         PreferencesManager  = require("preferences/PreferencesManager"),
         ProjectManager      = require("project/ProjectManager"),
         WorkspaceManager    = require("view/WorkspaceManager"),
-        InMemoryFile        = require("document/InMemoryFile"),
         AsyncUtils          = require("utils/Async"),
         ViewUtils           = require("utils/ViewUtils"),
         Resizer             = require("utils/Resizer"),
         Pane                = require("view/Pane").Pane;
         
-
-    /** 
-     * Temporary internal command 
-     *  May go away once we have implemented @Larz0's UI treatment
-     * @const
-     * @private
-     */
-    var CMD_ID_SPLIT_VERTICALLY = "cmd.splitVertically";
-
-    /** 
-     * Temporary internal command 
-     *  May go away once we have implemented @Larz0's UI treatment
-     * @const
-     * @private
-     */
-    var CMD_ID_SPLIT_HORIZONTALLY = "cmd.splitHorizontally";
-    
     /** 
      * Preference setting name for the MainView Saved State
      * @const
@@ -185,20 +167,6 @@ define(function (require, exports, module) {
      * @private
      */
     var MIN_PANE_SIZE      = 75;
-    
-    /**
-     * Command Object for splitting vertically
-     * @type {!Command}
-     * @private
-     */
-    var _cmdSplitVertically;
-
-    /**
-     * Command Object for splitting horizontally
-     * @type {!Command} 
-     * @private
-     */
-    var _cmdSplitHorizontally;
     
     /**
      * current orientation (null, VERTICAL or HORIZONTAL)
@@ -293,15 +261,25 @@ define(function (require, exports, module) {
     }
     
     /**
+     * Resolve paneId to actual pane.
+     * @param {?string} paneId - id of the desired pane. May be symbolic or null (to indicate current pane)
+     * @return {string} id of the pane in which to open the document
+     */
+    function _resolvePaneId(paneId) {
+        if (!paneId || paneId === ACTIVE_PANE) {
+            return getActivePaneId();
+        }
+        return paneId;
+    }
+    
+    /**
      * Retrieves the Pane object for the given paneId
      * @param {!string} paneId - id of the pane to retrieve
      * @return {?Pane} the Pane object or null if a pane object doesn't exist for the pane
      * @private
      */
     function _getPane(paneId) {
-        if (!paneId || paneId === ACTIVE_PANE) {
-            paneId = getActivePaneId();
-        }
+        paneId = _resolvePaneId(paneId);
         
         if (_panes[paneId]) {
             return _panes[paneId];
@@ -360,9 +338,7 @@ define(function (require, exports, module) {
      * @private
      */
     function _makePaneMostRecent(paneId) {
-        var index,
-            entry,
-            pane = _getPane(paneId);
+        var pane = _getPane(paneId);
 
         if (pane.getCurrentlyViewedFile()) {
             _makeFileMostRecent(paneId, pane.getCurrentlyViewedFile());
@@ -412,8 +388,8 @@ define(function (require, exports, module) {
     
     /**
      * Retrieves the currently viewed file of the specified paneId
-     * @param {string=} paneId - the id of the pane in which to retrieve the currently viewed file
-     * @return {?File} File object of the currently viewed file, null if there isn't one or undefined if there isn't a matching pane
+     * @param {?string} paneId - the id of the pane in which to retrieve the currently viewed file
+     * @return {?File} File object of the currently viewed file, or null if there isn't one or there's no such pane
      */
     function getCurrentlyViewedFile(paneId) {
         var pane = _getPane(paneId);
@@ -422,7 +398,7 @@ define(function (require, exports, module) {
  
     /**
      * Retrieves the currently viewed path of the pane specified by paneId
-     * @param {!string} paneId - the id of the pane in which to retrieve the currently viewed path
+     * @param {?string} paneId - the id of the pane in which to retrieve the currently viewed path
      * @return {?string} the path of the currently viewed file or null if there isn't one
      */
     function getCurrentlyViewedPath(paneId) {
@@ -986,49 +962,50 @@ define(function (require, exports, module) {
     }
     
     /**
-     * Updates the command check states of the split vertical and split horizontal commands
-     * @private
+     * Updates the header text for all panes
      */
-    function _updateCommandState() {
-        _cmdSplitVertically.setChecked(_orientation === VERTICAL);
-        _cmdSplitHorizontally.setChecked(_orientation === HORIZONTAL);
+    function _updatePaneHeaders() {
+        _forEachPaneOrPanes(ALL_PANES, function (pane) {
+            pane.updateHeaderText();
+        });
+        
     }
     
     /**
      * Creates a pane for paneId if one doesn't already exist
      * @param {!string} paneId - id of the pane to create
      * @private
-     * @return {Pane} - the pane object of the pane 
+     * @return {?Pane} - the pane object of the new pane, or undefined if no pane created
      */
     function _createPaneIfNecessary(paneId) {
-        var currentPane,
-            pane;
+        var newPane;
         
         if (!_panes.hasOwnProperty(paneId)) {
-            pane = new Pane(paneId, _$el);
-            _panes[paneId] = pane;
+            newPane = new Pane(paneId, _$el);
+            _panes[paneId] = newPane;
             
-            $(exports).triggerHandler("paneCreate", [pane.id]);
+            $(exports).triggerHandler("paneCreate", [newPane.id]);
             
-            pane.$el.on("click.mainview dragover.mainview", function () {
-                setActivePaneId(pane.id);
+            newPane.$el.on("click.mainview dragover.mainview", function () {
+                setActivePaneId(newPane.id);
             });
 
-            $(pane).on("viewListChange.mainview", function () {
-                $(exports).triggerHandler("workingSetUpdate", [pane.id]);
+            $(newPane).on("viewListChange.mainview", function () {
+                _updatePaneHeaders();
+                $(exports).triggerHandler("workingSetUpdate", [newPane.id]);
             });
-            $(pane).on("currentViewChange.mainview", function (e, newView, oldView) {
-                if (_activePaneId === pane.id) {
+            $(newPane).on("currentViewChange.mainview", function (e, newView, oldView) {
+                _updatePaneHeaders();
+                if (_activePaneId === newPane.id) {
                     $(exports).triggerHandler("currentFileChange",
                                               [newView && newView.getFile(),
-                                               pane.id, oldView && oldView.getFile(),
-                                               pane.id]);
+                                               newPane.id, oldView && oldView.getFile(),
+                                               newPane.id]);
                 }
             });
         }
-
         
-        return _panes[paneId];
+        return newPane;
     }
     
     /**
@@ -1054,13 +1031,23 @@ define(function (require, exports, module) {
      * @param {!string} orientation (VERTICAL|HORIZONTAL)
      */
     function _doSplit(orientation) {
-        var firstPane = _panes[FIRST_PANE];
+        var firstPane, newPane;
+        
+        if (orientation === _orientation) {
+            return;
+        }
+        
+        firstPane = _panes[FIRST_PANE];
         Resizer.removeSizable(firstPane.$el);
 
+        if (_orientation) {
+            _$el.removeClass("split-" + _orientation.toLowerCase());
+        }
+        _$el.addClass("split-" + orientation.toLowerCase());
+        
         _orientation = orientation;
-        _createPaneIfNecessary(SECOND_PANE);
+        newPane = _createPaneIfNecessary(SECOND_PANE);
         _makeFirstPaneResizable();
-        _updateCommandState();
         
         // reset the layout to 50/50 split
         // if we changed orientation then
@@ -1068,6 +1055,11 @@ define(function (require, exports, module) {
         _initialLayout();
         
         $(exports).triggerHandler("paneLayoutChange", [_orientation]);
+        
+        // if new pane was created, make it the active pane
+        if (newPane) {
+            setActivePaneId(newPane.id);
+        }
     }
     
     /**
@@ -1082,9 +1074,7 @@ define(function (require, exports, module) {
      * @private
      */
     function _edit(paneId, doc) {
-        var currentPaneId = _getPaneIdForPath(doc.file.fullPath),
-            oldPane = _getPane(ACTIVE_PANE),
-            oldFile = oldPane.getCurrentlyViewedFile();
+        var currentPaneId = _getPaneIdForPath(doc.file.fullPath);
             
         if (currentPaneId) {
             // If the doc is open in another pane
@@ -1118,9 +1108,7 @@ define(function (require, exports, module) {
      *                           rejects with a File error or string
      */
     function _open(paneId, file) {
-        var oldPane = _getPane(ACTIVE_PANE),
-            oldFile = oldPane.getCurrentlyViewedFile(),
-            result = new $.Deferred();
+        var result = new $.Deferred();
         
         if (!file || !_getPane(paneId)) {
             throw new Error("bad argument");
@@ -1129,6 +1117,22 @@ define(function (require, exports, module) {
         var currentPaneId = _getPaneIdForPath(file.fullPath);
 
         if (currentPaneId) {
+            // Warn user (only once) when file is already open in another view
+            if (!PreferencesManager.getViewState("splitview.multipane-info") &&
+                    currentPaneId !== _resolvePaneId(paneId)) {
+                PreferencesManager.setViewState("splitview.multipane-info", true);
+                
+                // File tree also executes single-click code prior to executing double-click
+                // code, so delay showing modal dialog to prevent eating second click
+                window.setTimeout(function () {
+                    Dialogs.showModalDialog(
+                        DefaultDialogs.DIALOG_ID_INFO,
+                        Strings.SPLITVIEW_INFO_TITLE,
+                        Strings.SPLITVIEW_MULTIPANE_WARNING
+                    );
+                }, 500);
+            }
+
             // If the doc is open in another pane
             //  then switch to that pane and call open document
             //  which will really just show the view as it has always done
@@ -1139,8 +1143,7 @@ define(function (require, exports, module) {
         }
         
         // See if there is already a view for the file
-        var pane = _getPane(paneId),
-            view = pane.getViewForPath(file.fullPath);
+        var pane = _getPane(paneId);
 
         // See if there is a factory to create a view for this file
         //  we want to do this first because, we don't want our internal 
@@ -1214,10 +1217,10 @@ define(function (require, exports, module) {
                 }
             });
             
+            _$el.removeClass("split-" + _orientation.toLowerCase());
             _orientation = null;
             // this will set the remaining pane to 100%
             _initialLayout();
-            _updateCommandState();
             
             $(exports).triggerHandler("paneLayoutChange", [_orientation]);
 
@@ -1336,9 +1339,6 @@ define(function (require, exports, module) {
     function _loadViewState(e) {
         // file root is appended for each project
         var panes,
-            filesToOpen,
-            viewStates,
-            activeFile,
             promises = [],
             context = { location : { scope: "user",
                                      layer: "project" } },
@@ -1387,10 +1387,8 @@ define(function (require, exports, module) {
             _orientation = (panes.length > 1) ? state.orientation : null;
 
             _.forEach(state.panes, function (paneState, paneId) {
-                var pane = _createPaneIfNecessary(paneId),
-                    promise = pane.loadState(paneState);
-                
-                promises.push(promise);
+                _createPaneIfNecessary(paneId);
+                promises.push(_panes[paneId].loadState(paneState));
             });
 
             AsyncUtils.waitForAll(promises).then(function (opensList) {
@@ -1420,9 +1418,8 @@ define(function (require, exports, module) {
                     }
                 }
                 
-                _updateCommandState();
-
                 if (_orientation) {
+                    _$el.addClass("split-" + _orientation.toLowerCase());
                     $(exports).triggerHandler("paneLayoutChange", _orientation);
                 }
 
@@ -1511,36 +1508,18 @@ define(function (require, exports, module) {
         if (_activePaneId) {
             throw new Error("MainViewManager has already been initialized");
         }
+
         _$el = $container;
         _createPaneIfNecessary(FIRST_PANE);
         _activePaneId = FIRST_PANE;
         // One-time init so the pane has the "active" appearance   
         _panes[FIRST_PANE]._handleActivePaneChange(undefined, _activePaneId);
         _initialLayout();
-    }
-    
-    /** 
-     * handles the split vertically command
-     * @private
-     */
-    function _handleSplitVertically() {
-        if (_orientation === VERTICAL) {
-            _mergePanes();
-        } else {
-            _doSplit(VERTICAL);
-        }
-    }
-    
-    /** 
-     * handles the split horizontally command
-     * @private
-     */
-    function _handleSplitHorizontially() {
-        if (_orientation === HORIZONTAL) {
-            _mergePanes();
-        } else {
-            _doSplit(HORIZONTAL);
-        }
+
+        // This ensures that unit tests that use this function 
+        //  get an event handler for workspace events and we don't listen
+        //  to the event before we've been initialized
+        $(WorkspaceManager).on("workspaceUpdateLayout", _updateLayout);
     }
     
     /** 
@@ -1585,20 +1564,6 @@ define(function (require, exports, module) {
     }
     
     /** 
-     * Add an app ready callback to register global commands. 
-     */
-    AppInit.appReady(function () {
-        var menu = Menus.getMenu(Menus.AppMenuBar.VIEW_MENU);
-        if (menu) {
-            menu.addMenuDivider();
-            menu.addMenuItem(CMD_ID_SPLIT_VERTICALLY);
-            menu.addMenuItem(CMD_ID_SPLIT_HORIZONTALLY);
-        }
-        
-        _updateCommandState();
-    });
-
-    /**
      * Setup a ready event to initialize ourself
      */
     AppInit.htmlReady(function () {
@@ -1608,23 +1573,10 @@ define(function (require, exports, module) {
     // Event handlers
     $(ProjectManager).on("projectOpen",                       _loadViewState);
     $(ProjectManager).on("beforeProjectClose beforeAppClose", _saveViewState);
-    $(WorkspaceManager).on("workspaceUpdateLayout",           _updateLayout);
     $(EditorManager).on("activeEditorChange",                 _activeEditorChange);
     $(DocumentManager).on("pathDeleted",                      _removeDeletedFileFromMRU);
     
     
-    // Init 
-    
-    // NOTE: These strings and these commands will go away with the 
-    //        the SplitView UI Story. These are Temporary Commands to
-    //        use the feature.
-    _cmdSplitVertically = CommandManager.register("Split Vertically",
-                                                  CMD_ID_SPLIT_VERTICALLY,
-                                                  _handleSplitVertically);
-    _cmdSplitHorizontally = CommandManager.register("Split Horizontally",
-                                                    CMD_ID_SPLIT_HORIZONTALLY,
-                                                    _handleSplitHorizontially);
-
     // Unit Test Helpers
     exports._initialize                   = _initialize;
     exports._getPane                      = _getPane;
@@ -1662,7 +1614,7 @@ define(function (require, exports, module) {
     // Traversal
     exports.beginTraversal                = beginTraversal;
     exports.endTraversal                  = endTraversal;
-    exports.traverseToNextViewByMRU            = traverseToNextViewByMRU;
+    exports.traverseToNextViewByMRU       = traverseToNextViewByMRU;
     
     // PaneView Attributes
     exports.getActivePaneId               = getActivePaneId;
