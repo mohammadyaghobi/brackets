@@ -50,6 +50,7 @@ define(function (require, exports, module) {
 
     // Load dependent modules
     var AppInit             = require("utils/AppInit"),
+        Async               = require("utils/Async"),
         PreferencesDialogs  = require("preferences/PreferencesDialogs"),
         PreferencesManager  = require("preferences/PreferencesManager"),
         DocumentManager     = require("document/DocumentManager"),
@@ -281,9 +282,6 @@ define(function (require, exports, module) {
      */
     ActionCreator.prototype.setContext = function (path) {
         this.model.setContext(path);
-        if (path !== null && !_hasFileSelectionFocus()) {
-            $projectTreeContainer.trigger("scroll");
-        }
     };
 
     /**
@@ -405,27 +403,26 @@ define(function (require, exports, module) {
     /**
      * @private
      *
+     * Handler for changes in the focus between working set and file tree view.
+     */
+    function _fileViewControllerChange() {
+        actionCreator.setFocused(_hasFileSelectionFocus());
+        _renderTree();
+    }
+
+    /**
+     * @private
+     *
      * Handler for changes in document selection.
      */
     function _documentSelectionFocusChange() {
         var curFullPath = MainViewManager.getCurrentlyViewedPath(MainViewManager.ACTIVE_PANE);
         if (curFullPath && _hasFileSelectionFocus()) {
             actionCreator.setSelected(curFullPath, true);
-            actionCreator.setFocused(true);
         } else {
             actionCreator.setSelected(null);
-            actionCreator.setFocused(false);
         }
-    }
-
-    /**
-     * @private
-     *
-     * Handler for changes in the focus between working set and file tree view.
-     */
-    function _fileViewControllerChange() {
-        actionCreator.setFocused(_hasFileSelectionFocus());
-        $projectTreeContainer.trigger("scroll");
+        _fileViewControllerChange();
     }
 
     /**
@@ -631,6 +628,7 @@ define(function (require, exports, module) {
         if (!projectRoot) {
             return;
         }
+        model.setScrollerInfo($projectTreeContainer[0].scrollWidth, $projectTreeContainer.scrollTop(), $projectTreeContainer.scrollLeft(), $projectTreeContainer.offset().top);
         FileTreeView.render(fileTreeViewContainer, model._viewModel, projectRoot, actionCreator, forceRender, brackets.platform);
     };
 
@@ -679,6 +677,53 @@ define(function (require, exports, module) {
         } else {
             return path;
         }
+    }
+
+    /**
+     * After failing to load a project, this function determines which project path to fallback to.
+     * @return {$.Promise} Promise that resolves to a project path {string}
+     */
+    function _getFallbackProjectPath() {
+        var fallbackPaths = [],
+            recentProjects = PreferencesManager.getViewState("recentProjects") || [],
+            deferred = new $.Deferred();
+
+        // Build ordered fallback path array
+        if (recentProjects.length > 1) {
+            // *Most* recent project is the one that just failed to load, so use second most recent
+            fallbackPaths.push(recentProjects[1]);
+        }
+
+        // Next is Getting Started project
+        fallbackPaths.push(_getWelcomeProjectPath());
+
+        // Helper func for Async.firstSequentially()
+        function processItem(path) {
+            var deferred = new $.Deferred(),
+                fileEntry = FileSystem.getDirectoryForPath(path);
+
+            fileEntry.exists(function (err, exists) {
+                if (!err && exists) {
+                    deferred.resolve();
+                } else {
+                    deferred.reject();
+                }
+            });
+            
+            return deferred.promise();
+        }
+
+        // Find first path that exists
+        Async.firstSequentially(fallbackPaths, processItem)
+            .done(function (fallbackPath) {
+                deferred.resolve(fallbackPath);
+            })
+            .fail(function () {
+                // Last resort is Brackets source folder which is guaranteed to exist
+                deferred.resolve(FileUtils.getNativeBracketsDirectoryPath());
+            });
+        
+        return deferred.promise();
     }
 
     /**
@@ -859,7 +904,7 @@ define(function (require, exports, module) {
                         });
                     } else {
                         console.log("error loading project");
-                        _showErrorDialog(ERR_TYPE_LOADING_PROJECT_NATIVE, null, rootPath, err || FileSystemError.NOT_FOUND)
+                        _showErrorDialog(ERR_TYPE_LOADING_PROJECT_NATIVE, true, err || FileSystemError.NOT_FOUND, rootPath)
                             .done(function () {
                                 // Reset _projectRoot to null so that the following _loadProject call won't
                                 // run the 'beforeProjectClose' event a second time on the original project,
@@ -870,11 +915,13 @@ define(function (require, exports, module) {
                                 // project directory.
                                 // TODO (issue #267): When Brackets supports having no project directory
                                 // defined this code will need to change
-                                _loadProject(_getWelcomeProjectPath()).always(function () {
-                                    // Make sure not to reject the original deferred until the fallback
-                                    // project is loaded, so we don't violate expectations that there is always
-                                    // a current project before continuing after _loadProject().
-                                    result.reject();
+                                _getFallbackProjectPath().done(function (path) {
+                                    _loadProject(path).always(function () {
+                                        // Make sure not to reject the original deferred until the fallback
+                                        // project is loaded, so we don't violate expectations that there is always
+                                        // a current project before continuing after _loadProject().
+                                        result.reject();
+                                    });
                                 });
                             });
                     }
@@ -1091,6 +1138,20 @@ define(function (require, exports, module) {
         FileSyncManager.syncOpenDocuments();
 
         model.handleFSEvent(entry, added, removed);
+        
+        // @TODO: DocumentManager should implement its own fsChange  handler
+        //          we can clean up the calls to DocumentManager.notifyPathDeleted
+        //          and privatize DocumentManager.notifyPathDeleted as well
+        //        We can also remove the _fileSystemRename handler below and move
+        //          it to DocumentManager
+        if (removed) {
+            removed.forEach(function (file) {
+                // The call to syncOpenDocuemnts above will not nofify
+                //  document manager about deleted images that are 
+                //  not in the working set -- try to clean that up here
+                DocumentManager.notifyPathDeleted(file.fullPath);
+            });
+        }
     };
 
     /**
@@ -1122,15 +1183,6 @@ define(function (require, exports, module) {
         _renderTree();
     }
     
-    /**
-     * @private
-     * 
-     * Updates the scroller positioning on scroll or sidebar changes.
-     */
-    function _updateScrollerInfo() {
-        model.setScrollerInfo($projectTreeContainer.scrollTop(), $projectTreeContainer.scrollLeft(), $projectTreeContainer.offset().top);
-    }
-    
     // Initialize variables and listeners that depend on the HTML DOM
     AppInit.htmlReady(function () {
         $projectTreeContainer = $("#project-files-container");
@@ -1143,7 +1195,7 @@ define(function (require, exports, module) {
         model.setSelectionWidth($projectTreeContainer.width());
         
         $(".main-view").click(function (jqEvent) {
-            if (jqEvent.target.className !== "jstree-rename-input") {
+            if (!jqEvent.target.classList.contains("jstree-rename-input")) {
                 forceFinishRename();
                 actionCreator.setContext(null);
             }
@@ -1158,7 +1210,7 @@ define(function (require, exports, module) {
         });
 
         $(Menus.getContextMenu(Menus.ContextMenuIds.PROJECT_MENU)).on("beforeContextMenuClose", function () {
-            actionCreator.setContext(null);
+            model.setContext(null, false, true);
         });
 
         $projectTreeContainer.on("contextmenu", function () {
@@ -1178,7 +1230,7 @@ define(function (require, exports, module) {
                 Menus.closeAll();
                 actionCreator.setContext(null);
             }
-            _updateScrollerInfo();
+            _renderTree();
         });
         
         _renderTree();
